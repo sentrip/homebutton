@@ -190,6 +190,8 @@ class Door(object):
         try:
             result = await self._handle_message(DoorMessage.from_bytes(msg))
             await websocket.send(result)
+        except:
+            pass
         finally:
             self.connected.remove(websocket)
 
@@ -306,7 +308,7 @@ def cli_main(args):
     pi = Pi(mock=args.dev)
 
     if args.dev:
-        args.users = {'admin': 'admin'}
+        args.users = {'admin': '0420'}
         server = Door(args.users,
                       on_open=lambda u: print(f'open {u}'),
                       on_close=lambda: print('close'),
