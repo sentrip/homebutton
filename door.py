@@ -186,10 +186,10 @@ class Door(object):
 
     async def _serve(self, websocket, path):
         self.connected.add(websocket)
-        msg = await websocket.recv()
         try:
-            result = await self._handle_message(DoorMessage.from_bytes(msg))
-            await websocket.send(result)
+            async for msg in websocket:
+                result = await self._handle_message(DoorMessage.from_bytes(msg))
+                await websocket.send(result.encode())
         except:
             pass
         finally:
@@ -252,16 +252,16 @@ class Door(object):
             self.state = False
             self.on_close()
             if self.connected:
-                await asyncio.wait([c.send(0) for c in self.connected])
+                await asyncio.wait([c.send(b'0') for c in self.connected])
         self._close_task = None
 
     async def _pair(self):
         now = time.time()
         while self.time_to_stop_pairing > 0.0:
-            dt = now - time.time()
+            dt = time.time() - now
             now = time.time()
-            self.time_to_stop_pairing += dt
-            await asyncio.sleep(0.1)
+            self.time_to_stop_pairing -= dt
+            await asyncio.sleep(0.01)
         self._pair_task = None
 
     def _get_users(self):

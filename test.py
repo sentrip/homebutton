@@ -104,6 +104,17 @@ async def test_pairing_mode_unsuccessful(door, msg):
 
 
 @pytest.mark.asyncio
+async def test_pairing_mode_lasts_fixed_duration(door, msg):
+    door.pair(0.01)
+    await door.handle(DoorMessage('new', 'pwd', DoorMessage.PAIR))
+    assert door.users['new'] == 'pwd'
+    await asyncio.sleep(0.03)
+    with pytest.raises(RuntimeError):
+        await door.handle(DoorMessage('bad', 'pwd', DoorMessage.PAIR))
+    await door.close()
+
+
+@pytest.mark.asyncio
 async def test_door_loads_authenticated_users_from_file(door, msg, invalid_msg, users_file):
     door.users = users_file
 
@@ -140,13 +151,13 @@ async def test_door_server_client_set_state(door, msg):
     await door.ready
 
     result = await Door.set_state_async('test', 'test', DoorMessage.OPEN, host=host, port=port)
-    assert result == '1'
+    assert result == b'1'
     assert door.state == 1
     assert len(door.info['open']) == 1
     assert len(door.info['close']) == 0
 
     result = await Door.set_state_async('test', 'test', DoorMessage.CLOSE, host=host, port=port)
-    assert result == '0'
+    assert result == b'0'
     assert door.state == 0
     assert len(door.info['open']) == 1
     assert len(door.info['close']) == 1
