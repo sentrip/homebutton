@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">homebutton</string>
+    <string name="username_hint">username</string>
+    <string name="pin_hint">pin</string>
+    <string name="open_door">open</string>
+    <string name="close_door">close</string>
+    <string name="pair_door">pair</string>
 </resources>

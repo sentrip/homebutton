@@ -13,25 +13,28 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="44dp"
         android:ems="10"
-        android:hint="username"
+        android:hint="@string/username_hint"
         android:inputType="textPersonName"
-        android:textSize="34sp" />
+        android:textSize="34sp"
+        tools:ignore="TextContrastCheck"
+        android:importantForAutofill="no" />
 
     <EditText
         android:id="@+id/inputPassword"
         android:layout_width="match_parent"
         android:layout_height="66dp"
         android:ems="10"
-        android:hint="pin"
+        android:hint="@string/pin_hint"
         android:inputType="numberPassword"
-        android:textSize="34sp" />
+        android:textSize="34sp"
+        android:importantForAutofill="no" />
 
     <Button
         android:id="@+id/buttonOpen"
         android:layout_width="match_parent"
         android:layout_height="551dp"
         android:layout_marginBottom="52dp"
-        android:text="Open"
-        android:onClick="handleButtonOpen"/>
+        android:onClick="handleButtonOpen"
+        tools:text="_" />
 
 </LinearLayout>
