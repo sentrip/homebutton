@@ -57,17 +57,18 @@ class DoorMessage(object):
         self.state = state
 
     def to_bytes(self):
-        return base64.b64encode((self.user + ',' + self.pwd + ',' + str(self.state)).encode())
+        return base64.b64encode((self.user + "," + self.pwd + "," + str(self.state)).encode())
 
     @staticmethod
     def from_bytes(b):
-        decoded = base64.b64decode(b).decode('utf-8')
-        u, p, s = decoded.split(',')
+        decoded = base64.b64decode(b).decode("utf-8")
+        u, p, s = decoded.split(",")
         return DoorMessage(u, p, int(s))
 
 
 class FileEvent(object):
-    """Class that is similar to 'threading.Event' but it is set by the presence of a file with the given name"""
+    """Class that is similar to threading.Event but it is set by the presence of a file with the given name"""
+
     def __init__(self, name):
         self.name = name
         self._set = False
@@ -123,8 +124,8 @@ class Door(object):
         self._close_task = None
         self._pair_task = None
         self._running = True
-        self._kill_event = FileEvent('kill')
-        self._pair_event = FileEvent('pair')
+        self._kill_event = FileEvent("kill")
+        self._pair_event = FileEvent("pair")
 
     def pair(self, duration=30.0):
         """
@@ -133,10 +134,10 @@ class Door(object):
         :param duration: float: duration in seconds until paring is deactivated
         """
         if self.time_to_stop_pairing == 0.0:
-            self._run_task('_pair_task', self._pair())
+            self._run_task("_pair_task", self._pair())
         self.time_to_stop_pairing = duration
 
-    def run(self, host='localhost', port=6000):
+    def run(self, host="localhost", port=6000):
         """
         Run the door server on the given host and port
         """
@@ -146,15 +147,15 @@ class Door(object):
         self._running = False
 
     @staticmethod
-    def set_state(user, pwd, state, *, host='localhost', port=6000):
+    def set_state(user, pwd, state, *, host="localhost", port=6000):
         """
         Attempt to set the state of the door over the network and block until the response has arrived
-        See 'set_state_async'
+        See "set_state_async"
         """
         return asyncio.get_event_loop().run_until_complete(Door.set_state_async(user, pwd, state, host=host, port=port))
 
     @staticmethod
-    async def set_state_async(user, pwd, state, *, host='localhost', port=6000):
+    async def set_state_async(user, pwd, state, *, host="localhost", port=6000):
         """
         Attempt to set the state of the door over the network asynchronously
         :param user: str: username
@@ -164,7 +165,7 @@ class Door(object):
         :param port: int: port number of door server
         :return: int: state of the door after processing the request
         """
-        async with websockets.connect(f'ws://{host}:{port}') as websocket:
+        async with websockets.connect(f"ws://{host}:{port}") as websocket:
             await websocket.send(DoorMessage(user, pwd, state).to_bytes())
             result = await websocket.recv()
         return result
@@ -198,16 +199,16 @@ class Door(object):
     async def _handle_message(self, msg):
         if msg.state == DoorMessage.PAIR and self.time_to_stop_pairing > 0.0:
             await self._handle_pair(msg)
-            return '1'
+            return "1"
         else:
             await self._handle_set_state(msg)
-            return '1' if self.state else '0'
+            return "1" if self.state else "0"
 
     async def _handle_pair(self, msg):
         if isinstance(self.users, str):
             users = self._get_users()
             users[msg.user] = msg.pwd
-            with open(self.users, 'w') as f:
+            with open(self.users, "w") as f:
                 json.dump(users, f)
         elif self.users is not None:
             self.users[msg.user] = msg.pwd
@@ -223,7 +224,7 @@ class Door(object):
                 self.state = True
                 self.last_to_open = msg.user
                 self.on_open(msg.user)
-                self._run_task('_close_task', self._close_after())
+                self._run_task("_close_task", self._close_after())
 
         elif msg.state == DoorMessage.CLOSE and self.state:
             await self._close()
@@ -252,7 +253,7 @@ class Door(object):
             self.state = False
             self.on_close()
             if self.connected:
-                await asyncio.wait([c.send(b'0') for c in self.connected])
+                await asyncio.wait([c.send(b"0") for c in self.connected])
         self._close_task = None
 
     async def _pair(self):
@@ -275,7 +276,7 @@ class Door(object):
                 except json.JSONDecodeError:
                     return {}
                 except Exception as e:
-                    print('Bizarre error: ', repr(e))
+                    print("Bizarre error: ", repr(e))
                     return {}
             else:
                 return {}
@@ -287,19 +288,19 @@ class Door(object):
 def parse_args():
     import argparse
 
-    parser = argparse.ArgumentParser(description='Run homebutton raspberry-pi door controller server')
-    parser.add_argument('--host', default='localhost', type=str,
-                        help='Hostname to use when running the server')
-    parser.add_argument('--port', default=6000, type=int,
-                        help='Port number to use when running the server')
-    parser.add_argument('--users', default='users.json', type=str,
-                        help='File where authenticated user dictionary is stored')
-    parser.add_argument('--auto-close', default=5.0, type=float,
-                        help='Number of seconds after which the door is automatically closed')
-    parser.add_argument('--pin', default=18, type=int,
-                        help='Raspberry-pi pin number to use for door output')
-    parser.add_argument('--dev', action='store_true',
-                        help='Dev mode prints the names of users that open/close the door')
+    parser = argparse.ArgumentParser(description="Run homebutton raspberry-pi door controller server")
+    parser.add_argument("--host", default="localhost", type=str,
+                        help="Hostname to use when running the server")
+    parser.add_argument("--port", default=6000, type=int,
+                        help="Port number to use when running the server")
+    parser.add_argument("--users", default="users.json", type=str,
+                        help="File where authenticated user dictionary is stored")
+    parser.add_argument("--auto-close", default=5.0, type=float,
+                        help="Number of seconds after which the door is automatically closed")
+    parser.add_argument("--pin", default=18, type=int,
+                        help="Raspberry-pi pin number to use for door output")
+    parser.add_argument("--dev", action="store_true",
+                        help="Dev mode prints the names of users that open/close the door")
 
     return parser.parse_args()
 
@@ -308,10 +309,10 @@ def cli_main(args):
     pi = Pi(mock=args.dev)
 
     if args.dev:
-        args.users = {'admin': '0420'}
+        args.users = {"admin": "0420"}
         server = Door(args.users,
-                      on_open=lambda u: print(f'open {u}'),
-                      on_close=lambda: print('close'),
+                      on_open=lambda u: print(f"open {u}"),
+                      on_close=lambda: print("close"),
                       auto_close_after=args.auto_close)
 
     else:
@@ -324,5 +325,5 @@ def cli_main(args):
     pi.cleanup()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     cli_main(parse_args())
