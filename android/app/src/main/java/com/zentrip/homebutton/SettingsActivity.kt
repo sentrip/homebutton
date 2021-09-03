@@ -9,6 +9,7 @@ import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
+import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
@@ -49,6 +50,7 @@ class SettingsActivity : AppCompatActivity(), TextWatcher {
         inputPassword = findViewById(R.id.inputPiPassword)
         buttonRun = findViewById(R.id.buttonRun)
         buttonPair = findViewById(R.id.buttonPair)
+        buttonPair.text = getString(R.string.pair_door)
 
         settings = intent.getSerializableExtra(SETTINGS_MESSAGE) as DoorSettings
         isRunning = intent.getBooleanExtra(CONNECTED_MESSAGE, false)
@@ -70,7 +72,6 @@ class SettingsActivity : AppCompatActivity(), TextWatcher {
         pi.host = settings.localHost
         pi.username = settings.piUser
         pi.password = settings.piPassword
-        pi.dev = true
 
         inputUser.isVisible = settings.user == "admin"
         inputPassword.isVisible = settings.user == "admin"
@@ -84,6 +85,12 @@ class SettingsActivity : AppCompatActivity(), TextWatcher {
         setResult(RESULT_OK, Intent().apply { putExtra(SETTINGS_MESSAGE, settings)  })
         finish()
     }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        onBackPressed()
+        return true
+    }
+
 
     override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) { }
     override fun afterTextChanged(p0: Editable?) {}
@@ -104,7 +111,6 @@ class SettingsActivity : AppCompatActivity(), TextWatcher {
         pi.host = settings.localHost
         pi.username = settings.piUser
         pi.password = settings.piPassword
-        pi.dev = true
 
         GlobalScope.launch(Dispatchers.IO) {
             settings.save(getPreferences(Context.MODE_PRIVATE))
@@ -128,7 +134,7 @@ class SettingsActivity : AppCompatActivity(), TextWatcher {
                     pi.start()
                     enableRunButtonLater()
                 }
-            }, 200)
+            }, 1000)
         }
         else {
             isRunning = false
@@ -140,9 +146,13 @@ class SettingsActivity : AppCompatActivity(), TextWatcher {
 
     fun handleButtonPair(view: View) {
         hideUserInput(view)
-        CoroutineScope(Dispatchers.IO).launch { pi.pair() }
+        buttonPair.text = getString(R.string.pairing_door)
         buttonPair.isEnabled = false
-        Handler(Looper.getMainLooper()).postDelayed({ buttonPair.isEnabled = true }, 3000)
+        CoroutineScope(Dispatchers.IO).launch { pi.pair() }
+        Handler(Looper.getMainLooper()).postDelayed({
+            buttonPair.text = getString(R.string.pair_door)
+            buttonPair.isEnabled = true
+        }, 30000)
     }
 
     private fun hideUserInput(view: View) {
@@ -157,7 +167,6 @@ class SettingsActivity : AppCompatActivity(), TextWatcher {
     }
 
     private fun updateButtons() {
-        buttonPair.text = getString(R.string.pair_door)
         buttonPair.setBackgroundColor(resources.getColor(colorPair))
         buttonRun.text = getString(if (isRunning) R.string.stop_server else R.string.run_server)
         buttonRun.setBackgroundColor(resources.getColor(if (isRunning) colorStop else colorRun))

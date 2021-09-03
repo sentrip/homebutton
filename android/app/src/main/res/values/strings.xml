@@ -15,4 +15,5 @@
     <string name="open_door">open</string>
     <string name="close_door">close</string>
     <string name="pair_door">pair</string>
+    <string name="pairing_door">pairing</string>
 </resources>

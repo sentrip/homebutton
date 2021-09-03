@@ -73,6 +73,10 @@ class MainActivity : AppCompatActivity(), TextWatcher, DoorClient.Watcher {
         val st = data?.getSerializableExtra(SETTINGS_MESSAGE) as DoorSettings?
         if (st != null) {
             settings = st
+            onSettingsChanged()
+            GlobalScope.launch(Dispatchers.IO) {
+                client.connect()
+            }
         }
     }
 

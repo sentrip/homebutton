@@ -16,9 +16,9 @@ import java.io.Serializable
 
 class DoorSettings: Serializable {
     var globalHost: String = ""
-    var globalPort: Int = 80
-    var localHost: String = ""
-    var localPort: Int = 6000
+    var globalPort: Int = DEFAULT_GLOBAL_PORT
+    var localHost: String = DEFAULT_LOCAL_HOST
+    var localPort: Int = DEFAULT_LOCAL_PORT
     var piUser: String = ""
     var piPassword: String = ""
     var user: String = ""
@@ -44,9 +44,9 @@ class DoorSettings: Serializable {
     }
 
     companion object {
-        var DEFAULT_LOCAL_HOST: String = "192.168.0.102"
+        var DEFAULT_LOCAL_HOST: String = "192.168.0.89"
         var DEFAULT_LOCAL_PORT: Int = 6000
-        var DEFAULT_GLOBAL_PORT: Int = 80
+        var DEFAULT_GLOBAL_PORT: Int = 4000
 
         fun load(pref: SharedPreferences): DoorSettings {
             val s = DoorSettings()
@@ -165,7 +165,7 @@ class PiClient {
     }
 
     fun copyScripts() {
-        executeSSHCommand("mkdir $targetDir", username, password, host)
+        executeSSHCommand("mkdir $targetDir; echo '$host' > $targetDir/.host_name", username, password, host)
         copyFileSSH("/res/raw/door.py", "$targetDir/door.py", username, password, host)
         copyFileSSH("/res/raw/run_door.sh", "$targetDir/door.sh", username, password, host)
     }

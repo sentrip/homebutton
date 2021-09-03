@@ -4,6 +4,7 @@ import base64
 import json
 import os
 import time
+import traceback
 
 import websockets
 
@@ -134,6 +135,7 @@ class Door(object):
         :param duration: float: duration in seconds until paring is deactivated
         """
         if self.time_to_stop_pairing == 0.0:
+            print("pairing")
             self._run_task("_pair_task", self._pair())
         self.time_to_stop_pairing = duration
 
@@ -191,8 +193,8 @@ class Door(object):
             async for msg in websocket:
                 result = await self._handle_message(DoorMessage.from_bytes(msg))
                 await websocket.send(result.encode())
-        except:
-            pass
+        except Exception as e:
+            traceback.print_tb(e.__traceback__)
         finally:
             self.connected.remove(websocket)
 
@@ -207,14 +209,14 @@ class Door(object):
     async def _handle_pair(self, msg):
         if isinstance(self.users, str):
             users = self._get_users()
-            users[msg.user] = msg.pwd
+            users[msg.user.lower()] = msg.pwd
             with open(self.users, "w") as f:
                 json.dump(users, f)
         elif self.users is not None:
-            self.users[msg.user] = msg.pwd
+            self.users[msg.user.lower()] = msg.pwd
 
     async def _handle_set_state(self, msg):
-        if self.users is not None and self._get_users().get(msg.user, None) != msg.pwd:
+        if self.users is not None and self._get_users().get(msg.user.lower(), None) != msg.pwd:
             raise RuntimeError
 
         if msg.state == DoorMessage.OPEN:
@@ -222,8 +224,8 @@ class Door(object):
 
             if not self.state:
                 self.state = True
-                self.last_to_open = msg.user
-                self.on_open(msg.user)
+                self.last_to_open = msg.user.lower()
+                self.on_open(msg.user.lower())
                 self._run_task("_close_task", self._close_after())
 
         elif msg.state == DoorMessage.CLOSE and self.state:
