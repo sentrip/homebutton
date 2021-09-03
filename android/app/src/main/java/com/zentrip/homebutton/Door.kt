@@ -90,11 +90,11 @@ class DoorClient : WebSocketAdapter() {
         setState(usr, pwd, PAIR)
     }
 
-    fun connect() {
+    fun connect(local: Boolean) {
         disconnect()
-        if (doConnect("ws://${settings.localHost}:${settings.localPort}/"))
+        if (local && doConnect("ws://${settings.localHost}:${settings.localPort}/"))
             return
-        if (!settings.globalHost.isEmpty())
+        else if (!settings.globalHost.isEmpty())
             doConnect("ws://${settings.globalHost}:${settings.globalPort}/")
     }
 
@@ -104,13 +104,13 @@ class DoorClient : WebSocketAdapter() {
     }
 
     private fun setState(usr: String, pwd: String, state: String) {
-        if (!ws.isOpen)
-            connect()
         ws.sendBinary(Base64.encode("$usr,$pwd,$state".encodeToByteArray(), Base64.DEFAULT))
     }
 
     private fun doConnect(uri: String): Boolean {
-        ws = WebSocketFactory().createSocket(uri)
+        ws = WebSocketFactory()
+            .setConnectionTimeout(1000)
+            .createSocket(uri)
         ws.addListener(this)
         try {
             ws.connect()

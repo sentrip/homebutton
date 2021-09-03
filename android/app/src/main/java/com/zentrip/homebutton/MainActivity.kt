@@ -1,8 +1,6 @@
 package com.zentrip.homebutton
 
-import android.content.Context
 import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -17,6 +15,9 @@ import androidx.appcompat.app.AppCompatActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import android.net.ConnectivityManager
+
+
 
 const val SETTINGS_MESSAGE = "com.zentrip.homebutton.SETTINGS"
 const val CONNECTED_MESSAGE = "com.zentrip.homebutton.CONNECTED"
@@ -49,7 +50,7 @@ class MainActivity : AppCompatActivity(), TextWatcher, DoorClient.Watcher {
         inputPin.addTextChangedListener(this)
         onStateChanged(false)
         GlobalScope.launch(Dispatchers.IO) {
-            client.connect()
+            client.connect(isWifiOnAndConnected())
         }
     }
 
@@ -75,7 +76,7 @@ class MainActivity : AppCompatActivity(), TextWatcher, DoorClient.Watcher {
             settings = st
             onSettingsChanged()
             GlobalScope.launch(Dispatchers.IO) {
-                client.connect()
+                client.connect(isWifiOnAndConnected())
             }
         }
     }
@@ -105,6 +106,8 @@ class MainActivity : AppCompatActivity(), TextWatcher, DoorClient.Watcher {
     fun handleButtonOpen(view: View) {
         hideUserInput(view)
         GlobalScope.launch(Dispatchers.IO) {
+            if (!client.isConnected())
+                client.connect(isWifiOnAndConnected())
             if (settings.isPaired) {
                 if (!settings.state)
                     client.open(settings.user, settings.pin)
@@ -162,18 +165,24 @@ class MainActivity : AppCompatActivity(), TextWatcher, DoorClient.Watcher {
     }
 
     private fun hideUserInput(view: View) {
-        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(view.windowToken, 0)
         inputPin.clearFocus()
         inputUser.clearFocus()
     }
 
     private fun loadSettings() {
-        settings = DoorSettings.load(getPreferences(Context.MODE_PRIVATE))
+        settings = DoorSettings.load(getPreferences(MODE_PRIVATE))
         client.settings = settings
     }
 
     private fun saveSettings() {
-        settings.save(getPreferences(Context.MODE_PRIVATE))
+        settings.save(getPreferences(MODE_PRIVATE))
+    }
+
+    private fun isWifiOnAndConnected(): Boolean {
+        val cm = applicationContext.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
+        val ni = cm.activeNetworkInfo
+        return ni != null && ni.type == ConnectivityManager.TYPE_WIFI
     }
 }
