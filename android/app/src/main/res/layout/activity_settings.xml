@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".SettingsActivity">
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:stretchColumns="1">
+
+        <TableRow
+            android:id="@+id/tableRowGlobal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="3dip" >
+
+            <EditText
+                android:id="@+id/inputGlobalHost"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:ems="10"
+                android:hint="@string/global_host_hint"
+                android:inputType="textPersonName" />
+
+            <EditText
+                android:id="@+id/inputGlobalPort"
+                android:layout_width="111dp"
+                android:layout_height="45dp"
+                android:ems="10"
+                android:hint="@string/port_hint"
+                android:inputType="number"/>
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/tableRowLocal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="3dip" >
+
+            <EditText
+                android:id="@+id/inputLocalHost"
+                android:layout_width="148dp"
+                android:layout_height="match_parent"
+                android:ems="10"
+                android:hint="@string/local_host_hint"
+                android:inputType="textPersonName" />
+
+            <EditText
+                android:id="@+id/inputLocalPort"
+                android:layout_width="148dp"
+                android:layout_height="45dp"
+                android:ems="10"
+                android:hint="@string/port_hint"
+                android:inputType="number"/>
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/tableRowUsername"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <EditText
+                android:id="@+id/inputPiUsername"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:ems="10"
+                android:hint="@string/username_hint"
+                android:inputType="textPersonName"
+                android:layout_span="2"/>
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/tableRowPassword"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <EditText
+                android:id="@+id/inputPiPassword"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:ems="10"
+                android:hint="@string/password_hint"
+                android:inputType="textPersonName"
+                android:layout_span="2"/>
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/tableRowRun"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <Button
+                android:id="@+id/buttonRun"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:onClick="handleButtonRun"
+                android:layout_span="2"/>
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/tableRowPair"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <Button
+                android:id="@+id/buttonPair"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:onClick="handleButtonPair"
+                android:layout_span="2"/>
+        </TableRow>
+
+    </TableLayout>
+
+</LinearLayout>

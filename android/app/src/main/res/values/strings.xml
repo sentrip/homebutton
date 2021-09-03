@@ -1,7 +1,17 @@
 <resources>
     <string name="app_name">homebutton</string>
+    <string name="settings">settings</string>
+
     <string name="username_hint">username</string>
     <string name="pin_hint">pin</string>
+    <string name="global_host_hint">global host</string>
+    <string name="local_host_hint">local host</string>
+    <string name="port_hint">port</string>
+    <string name="password_hint">password</string>
+
+    <string name="run_server">run</string>
+    <string name="stop_server">stop</string>
+
     <string name="open_door">open</string>
     <string name="close_door">close</string>
     <string name="pair_door">pair</string>

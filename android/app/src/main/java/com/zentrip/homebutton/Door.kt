@@ -11,13 +11,16 @@ import com.neovisionaries.ws.client.WebSocketFactory
 import com.jcraft.jsch.JSch
 import com.jcraft.jsch.Session
 import com.jcraft.jsch.ChannelExec
+import java.io.Serializable
 
 
-class DoorSettings {
+class DoorSettings: Serializable {
     var globalHost: String = ""
     var globalPort: Int = 80
     var localHost: String = ""
     var localPort: Int = 6000
+    var piUser: String = ""
+    var piPassword: String = ""
     var user: String = ""
     var pin: String = ""
     var isPaired: Boolean = false
@@ -30,6 +33,8 @@ class DoorSettings {
             putInt("globalPort", globalPort)
             putString("localHost", localHost)
             putInt("localPort", localPort)
+            putString("piUser", piUser)
+            putString("piPassword", piPassword)
             putString("user", user)
             putString("pin", pin)
             putBoolean("isPaired", isPaired)
@@ -49,6 +54,8 @@ class DoorSettings {
             s.globalPort = pref.getInt("globalPort", DEFAULT_GLOBAL_PORT)
             s.localHost = pref.getString("localHost", DEFAULT_LOCAL_HOST).toString()
             s.localPort = pref.getInt("localPort", DEFAULT_LOCAL_PORT)
+            s.piUser = pref.getString("piUser", "").toString()
+            s.piPassword = pref.getString("piPassword", "").toString()
             s.user = pref.getString("user", "").toString()
             s.pin = pref.getString("pin", "").toString()
             s.isPaired = pref.getBoolean("isPaired", false)
@@ -66,6 +73,10 @@ class DoorClient : WebSocketAdapter() {
 
     var settings: DoorSettings = DoorSettings()
     var delegate: Watcher? = null
+
+    fun isConnected(): Boolean {
+        return ws.isOpen
+    }
 
     fun open(usr: String, pwd: String) {
         setState(usr, pwd, OPEN)
@@ -136,7 +147,9 @@ class PiClient {
     var username: String = "pi"
     var host: String = DoorSettings.DEFAULT_LOCAL_HOST;
     var password: String = ""
-    var targetDir: String = "/home/$username/homebutton"
+    val targetDir: String
+        get() = "/home/$username/homebutton"
+
     var dev: Boolean = false
 
     fun start() {
@@ -152,6 +165,7 @@ class PiClient {
     }
 
     fun copyScripts() {
+        executeSSHCommand("mkdir $targetDir", username, password, host)
         copyFileSSH("/res/raw/door.py", "$targetDir/door.py", username, password, host)
         copyFileSSH("/res/raw/run_door.sh", "$targetDir/door.sh", username, password, host)
     }

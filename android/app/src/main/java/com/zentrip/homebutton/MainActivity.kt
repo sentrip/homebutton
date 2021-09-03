@@ -1,10 +1,14 @@
 package com.zentrip.homebutton
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
@@ -14,14 +18,15 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
+const val SETTINGS_MESSAGE = "com.zentrip.homebutton.SETTINGS"
+const val CONNECTED_MESSAGE = "com.zentrip.homebutton.CONNECTED"
 
 class MainActivity : AppCompatActivity(), TextWatcher, DoorClient.Watcher {
 
-    private var colorOpen: Int = Color.GREEN
-    private var colorClose: Int = Color.RED
-    private var colorPair: Int = Color.BLUE
+    private var colorOpen: Int = R.color.green
+    private var colorClose: Int = R.color.red
+    private var colorPair: Int = R.color.blue
 
-    private var pi: PiClient = PiClient()
     private var client: DoorClient = DoorClient()
     private var settings: DoorSettings = DoorSettings()
     private var submittedUser: String = ""
@@ -44,12 +49,6 @@ class MainActivity : AppCompatActivity(), TextWatcher, DoorClient.Watcher {
         inputPin.addTextChangedListener(this)
         onStateChanged(false)
         GlobalScope.launch(Dispatchers.IO) {
-            pi.host = "192.168.0.102"
-            pi.username = "jayjay"
-            pi.password = "K@yaisL@brad0r"
-            pi.targetDir = "/home/jayjay/projects/homebutton"
-            pi.dev = true
-            pi.start()
             client.connect()
         }
     }
@@ -67,6 +66,30 @@ class MainActivity : AppCompatActivity(), TextWatcher, DoorClient.Watcher {
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
         onDisconnect()
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        val st = data?.getSerializableExtra(SETTINGS_MESSAGE) as DoorSettings?
+        if (st != null) {
+            settings = st
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.main_menu, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.buttonSettings) {
+            val intent = Intent(this, SettingsActivity::class.java).apply {
+                putExtra(SETTINGS_MESSAGE, settings)
+                putExtra(CONNECTED_MESSAGE, client.isConnected())
+            }
+            startActivityForResult(intent, 1)
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) { }
@@ -108,11 +131,11 @@ class MainActivity : AppCompatActivity(), TextWatcher, DoorClient.Watcher {
     private fun onButtonUpdate() {
         if (settings.isPaired) {
             buttonOpen.text = getString(if (settings.state) R.string.close_door else R.string.open_door)
-            buttonOpen.setBackgroundColor(if (settings.state) colorClose else colorOpen)
+            buttonOpen.setBackgroundColor(resources.getColor(if (settings.state) colorClose else colorOpen))
         }
         else {
             buttonOpen.text = getString(R.string.pair_door)
-            buttonOpen.setBackgroundColor(colorPair)
+            buttonOpen.setBackgroundColor(resources.getColor(colorPair))
         }
     }
 
@@ -122,10 +145,6 @@ class MainActivity : AppCompatActivity(), TextWatcher, DoorClient.Watcher {
         settings.isPaired = settings.pairHistory.contains(settings.user)
         onButtonUpdate()
         client.settings = settings
-        pi.host = settings.localHost
-        pi.host = "192.168.0.244"
-        pi.username = "pi"
-        pi.password = "L@brad0r"
         GlobalScope.launch(Dispatchers.IO) {
             saveSettings()
         }
@@ -148,10 +167,6 @@ class MainActivity : AppCompatActivity(), TextWatcher, DoorClient.Watcher {
     private fun loadSettings() {
         settings = DoorSettings.load(getPreferences(Context.MODE_PRIVATE))
         client.settings = settings
-        pi.host = settings.localHost
-        pi.host = "192.168.0.244"
-        pi.username = "pi"
-        pi.password = "L@brad0r"
     }
 
     private fun saveSettings() {
