@@ -55,11 +55,11 @@ struct DoorView: View {
             VStack(alignment: .leading) {
                 TextField("username", text: $state.username, onEditingChanged: {t in self.state.saveLater() })
                     .font(.title)
-                    .foregroundColor(.black)
+                    .foregroundColor(.primary)
                 
                 SecureField("pin", text: $state.pin, onCommit: { self.state.saveLater() })
                     .font(.title)
-                    .foregroundColor(.black)
+                    .foregroundColor(.primary)
                     .keyboardType(.numberPad)
 
                 Text("")

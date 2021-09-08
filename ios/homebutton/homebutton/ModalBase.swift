@@ -11,6 +11,8 @@ import SwiftUI
 
 struct ModalBase<Content: View>: View {
     
+    @Environment(\.colorScheme) var colorScheme
+    
     @Binding var showModal: Bool
     let content: Content
     
@@ -29,7 +31,7 @@ struct ModalBase<Content: View>: View {
                 }
             }
         }
-        .background(Color.white)
+        .background(colorScheme == .dark ? Color.black : Color.white)
         .offset(x: 0, y: showModal ? 0 : UIApplication.shared.windows.filter { $0.isKeyWindow }.first?.safeAreaInsets.top ?? 0 )
     }
 }

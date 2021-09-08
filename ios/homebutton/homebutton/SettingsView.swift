@@ -28,12 +28,12 @@ struct IPPort: View {
         HStack {
             TextField(ipHint, text: $ip, onEditingChanged: {t in self.onChange() })
                 .font(.headline)
-                .foregroundColor(.black)
+                .foregroundColor(.primary)
             
             TextField("port", text: $port, onEditingChanged: {t in self.onChange() })
                 .keyboardType(.numberPad)
                 .font(.headline)
-                .foregroundColor(.black)
+                .foregroundColor(.primary)
                 .multilineTextAlignment(.trailing)
         }
     }
@@ -57,15 +57,15 @@ struct SettingsView: View {
             if (state.isAdmin()) {
                 TextField("pi username", text: $state.piUsername, onEditingChanged: {t in self.state.saveLater() })
                     .font(.headline)
-                    .foregroundColor(.black)
+                    .foregroundColor(.primary)
 
                 SecureField("pi password", text: $state.piPassword, onCommit: { self.state.saveLater() })
                     .font(.headline)
-                    .foregroundColor(.black)
+                    .foregroundColor(.primary)
                 
                 TextField("directory", text: $state.targetDir, onEditingChanged: {t in self.state.saveLater() })
                     .font(.subheadline)
-                    .foregroundColor(.black)
+                    .foregroundColor(.primary)
                 
                 Text("")
                     .font(.title)

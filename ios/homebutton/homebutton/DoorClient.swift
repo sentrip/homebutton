@@ -300,7 +300,7 @@ class DoorClient2: ObservableObject, DoorSocketDelegate {
             local.setUrl(url: url)
             validLocalUrl = true
             let s = DoorState.main
-            if !paired && !s.isPaired() {
+            if !paired && !s.isPaired() && !s.username.isEmpty && !s.pin.isEmpty {
                 local.send(message: DoorMessage(username: s.username, password: s.pin, state: .pair))
             }
         }
@@ -314,7 +314,7 @@ class DoorClient2: ObservableObject, DoorSocketDelegate {
             global.setUrl(url: url)
             validGlobalUrl = true
             let s = DoorState.main
-            if !paired && !s.isPaired() {
+            if !paired && !s.isPaired() && !s.username.isEmpty && !s.pin.isEmpty {
                 global.send(message: DoorMessage(username: s.username, password: s.pin, state: .pair))
             }
         }
