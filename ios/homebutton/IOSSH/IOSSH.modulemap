@@ -1,0 +1,14 @@
+
+framework module IOSSH {
+    
+    umbrella header "IOSSH.h"
+    
+    header "libssh2.h"
+    header "libssh2_sftp.h"
+    header "libssh2_publickey.h"
+    
+    link "ssh2"
+
+    export *
+}
+    
