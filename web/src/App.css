@@ -1,0 +1,78 @@
+.App {
+  text-align: center;
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+#header {
+  min-height: 25vh;
+}
+
+.Door-input {
+  display: flex;
+  font-size: 1.5em;
+  padding: 4px 0;
+  width: 100%;
+}
+
+.Door-button {
+  /*display: flex;*/
+  align-self: stretch;
+  width: 100%;
+  height: 100%;
+  border: none;
+  font-size: 3em;
+}
+
+.Door-open {
+  background: limegreen;
+}
+
+.Door-close {
+  background: red;
+}
+
+.Door-pair {
+  background: blue;
+}
+
+.Settings-button {
+  display: inline-block;
+  position: fixed;
+  top: 0;
+  right: 0;
+  margin-top: 2em;
+  margin-right: 2em;
+  width: 4em;
+  height: 4em;
+  background: url(settings_icon_white.png) no-repeat;
+  background-size: cover;
+  border: none;
+}
+
+.HideAdmin {
+  display: none;
+}
+
+.StatusIcon {
+  position: fixed;
+  top: 0;
+  left: 0;
+  margin-top: 1em;
+  margin-left: 1em;
+  width: 1em;
+  height: 1em;
+}
