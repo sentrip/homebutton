@@ -13,6 +13,7 @@ class DoorSocket {
         this._onOpen = onOpen
         this._onClose = onClose
         this._onMessage = onMessage
+        this._actionId = null
     }
 
     get connected() {
@@ -57,11 +58,18 @@ class DoorSocket {
         if (!this._validHost(this._host)) {
             return
         }
-        this._socket = new WebSocket(`ws://${this._host}:${this._port}`)
-        this._socket.onopen = e => this._onConnect()
-        this._socket.onclose = e => this._onDisconnect()
-        this._socket.onerror = e => this._onDisconnect()
-        this._socket.onmessage = e => this._onMessage(e.data)
+        if (this._actionId !== null) {
+            clearTimeout(this._actionId)
+            this._actionId = null
+        }
+        this._actionId = setTimeout(() => {
+            this._socket = new WebSocket(`ws://${this._host}:${this._port}`)
+            this._socket.onopen = e => this._onConnect()
+            this._socket.onclose = e => this._onDisconnect()
+            this._socket.onerror = e => this._onDisconnect()
+            this._socket.onmessage = e => this._onMessage(e.data)
+            this._actionId = null
+        }, 500)
     }
 
     _onConnect() {
@@ -210,7 +218,7 @@ function App() {
     }
 
     const handleGlobalPortChange = e => {
-        setSettings({...settings, globalPort: parseInt(e.target.value)})
+        setSettings({...settings, globalPort: parseInt(e.target.value) || 0})
     }
 
     const handleLocalHostChange = e => {
@@ -218,7 +226,7 @@ function App() {
     }
 
     const handleLocalPortChange = e => {
-        setSettings({...settings, localPort: parseInt(e.target.value)})
+        setSettings({...settings, localPort: parseInt(e.target.value) || 0})
     }
 
     // TODO: Server management
