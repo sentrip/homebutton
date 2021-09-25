@@ -1,7 +1,7 @@
 {
   "name": "homebutton",
   "version": "0.1.0",
-  "homepage": "https://sentrip.github.io/homebutton",
+  "homepage": "http://homebutton.xyz",
   "private": false,
   "dependencies": {
     "@testing-library/jest-dom": "^5.14.1",
