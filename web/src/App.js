@@ -14,6 +14,7 @@ class DoorSocket {
         this._onClose = onClose
         this._onMessage = onMessage
         this._actionId = null
+        this._keepConnected()
     }
 
     get connected() {
@@ -85,15 +86,19 @@ class DoorSocket {
         if (wasConnected) {
             this._onClose()
         }
-        setTimeout(() => {
-            if (this._socket !== null && !this.connected) {
-                this._createSocket()
-            }
-        }, 1000)
     }
 
     _validHost(h) {
         return h !== null && h !== undefined && h.length !== 0
+    }
+
+    _keepConnected() {
+        if (this._socket !== null && !this.connected) {
+            this._createSocket()
+        }
+        setTimeout(() => {
+            this._keepConnected()
+        }, 1000)
     }
 }
 
