@@ -8,7 +8,7 @@ class DoorSocket {
     constructor(onOpen = () => {}, onClose = () => {}, onMessage = data => {}) {
         this._socket = null
         this._host = ""
-        this._port = 8080
+        this._port = 6000
         this._connected = false
         this._onOpen = onOpen
         this._onClose = onClose
@@ -186,9 +186,9 @@ function App() {
 
     const [settings, setSettings] = useState({
         globalHost: localStorage.getItem("globalHost") || "",
-        globalPort: parseInt(localStorage.getItem("globalPort") || "8000"),
-        localHost: localStorage.getItem("localHost") || "192.168.0.104",//"192.168.0.89",
-        localPort: parseInt(localStorage.getItem("localPort") || "8080"),
+        globalPort: parseInt(localStorage.getItem("globalPort") || "4000"),
+        localHost: localStorage.getItem("localHost") || "192.168.0.89",
+        localPort: parseInt(localStorage.getItem("localPort") || "6000"),
         piUsername: localStorage.getItem("piUsername") || "",
         piPassword: localStorage.getItem("piPassword") || "",
         piDirectory: localStorage.getItem("piDirectory") || ""
